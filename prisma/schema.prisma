@@ -1,0 +1,47 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+    provider             = "mysql"
+    url                  = env("DATABASE_URL")
+    referentialIntegrity = "prisma"
+}
+
+model Historial {
+    id              Int         @id @default(autoincrement())
+    fechaCreacion   DateTime    @default(now())
+    dni             String      @unique @db.VarChar(8)
+    apellidos       String
+    nombre          String
+    departamento    String
+    provincia       String
+    distrito        String
+    direccion       String
+    telefono        String      @db.VarChar(9)
+    fechaNacimiento DateTime
+    token           String      @default("") @db.VarChar(255)
+    sexo            Sexo
+    consultas       Consultas[]
+}
+
+model Consultas {
+    id            Int       @id @default(autoincrement())
+    historialId   Int
+    fecha         DateTime  @default(now())
+    institucion   String
+    medico        String
+    diagnostico   String
+    tratamiento   String
+    notas         String
+    observaciones String
+    historial     Historial @relation(fields: [historialId], references: [id], onDelete: Cascade)
+
+    @@index([historialId])
+}
+
+enum Sexo {
+    masculino
+    femenino
+}
